@@ -16,8 +16,8 @@ fn main() {
         .expect("Failed to read line");
 
     match answer {
-        [b'X'] => playing_board.current_player = Player::Cross,
-        [b'O'] => playing_board.current_player = Player::Circle,
+        [b'X'] => playing_board.current_player = Player::X,
+        [b'O'] => playing_board.current_player = Player::O,
         _ => (),
     };
 
@@ -36,20 +36,21 @@ fn main() {
             break;
         };
 
-        playing_board.play_move(&next_move);
-
-        match playing_board.check_state() {
-            State::Draw => {
-                println!("{}", playing_board);
-                println!("It's a draw!");
-                break;
+        match playing_board.play_move(&next_move.trim()) {
+            Err(_) => (),
+            Ok(state) => match state {
+                State::Draw => {
+                    println!("{}", playing_board);
+                    println!("It's a draw!");
+                    break;
+                },
+                State::Won(player) => {
+                    println!("{}", playing_board);
+                    println!("{} won this game!", player);
+                    break;
+                },
+                State::Playing => (),
             },
-            State::Won(player) => {
-                println!("{}", playing_board);
-                println!("{} won this game!", player);
-                break;
-            },
-            State::Playing => (),
         };
     };
 }

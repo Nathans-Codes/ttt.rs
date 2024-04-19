@@ -1,3 +1,5 @@
+use std::str;
+
 use super::{ player::Player, game_state::State::{ self, * }, };
 
 #[derive(PartialEq, Eq)]
@@ -10,8 +12,8 @@ impl std::fmt::Display for Slot {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Slot::Empty => write!(f, " "),
-            Slot::Occupied(Player::Cross) => write!(f, "X"),
-            Slot::Occupied(Player::Circle) => write!(f, "O"),
+            Slot::Occupied(Player::X) => write!(f, "X"),
+            Slot::Occupied(Player::O) => write!(f, "O"),
         }
     }
 }
@@ -29,49 +31,55 @@ impl Board {
                 [ Slot::Empty, Slot::Empty, Slot::Empty ],
                 [ Slot::Empty, Slot::Empty, Slot::Empty ],
             ],
-            current_player: Player::Circle,
+            current_player: Player::O,
         }
     }
 
-    pub fn play_move(&mut self, m: &str) {
-        let m_bytes = m.as_bytes();
+    pub fn sanitize_move(&self, m: String) -> Result<(usize, usize), ()> {
+        if m.len() != 2 {
+            return Err(());
+        };
 
-        let row: usize = match m_bytes[0] {
+        let bytes = m.as_bytes();
+
+        let row: usize = match bytes[0] {
             b'a' => 0,
             b'b' => 1,
             b'c' => 2,
             _ => usize::MAX,
         };
 
-        let column: usize = match m_bytes[1] {
+        let column: usize = match bytes[1] {
             b'1' => 0,
             b'2' => 1,
             b'3' => 2,
             _ => usize::MAX,
         };
 
-        let is_out_of_bounds = row == usize::MAX || column == usize::MAX;
-
-        if is_out_of_bounds {
-            return;
-        }
-
-        let is_legal_move = match self.rows[row][column] {
-            Slot::Empty => true,
-            _ => false,
+        if row == usize::MAX || column == usize::MAX {
+            return Err(());
         };
 
-        if !is_legal_move {
-            return;
+        match self.rows[row][column] {
+            Slot::Empty => Ok((row, column)),
+            Slot::Occupied(_) => Err(()),
         }
+    }
+
+    pub fn play_move(&mut self, m: &str) -> Result<State, ()> {
+        let (row, column) = match self.sanitize_move(m.to_string()) {
+            Ok(good_move) => good_move,
+            Err(()) => return Err(()),
+        };
 
         self.rows[row][column] = Slot::Occupied(self.current_player);
 
         self.current_player = match self.current_player {
-            Player::Cross => Player::Circle,
-            Player::Circle => Player::Cross,
+            Player::X => Player::O,
+            Player::O => Player::X,
         };
 
+        return Ok(self.check_state());
     }
 
     pub fn check_state(&self) -> State {
@@ -95,14 +103,12 @@ impl Board {
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "
-          1  2  3
-        a {}  {}  {}
-        b {}  {}  {}
-        c {}  {}  {}
-        ", self.rows[0][0], self.rows[0][1], self.rows[0][2], 
-        self.rows[1][0], self.rows[1][1], self.rows[1][2], 
-        self.rows[2][0], self.rows[2][1], self.rows[2][2])
+        write!(f, " 1  2  3
+a {}  {}  {}
+b {}  {}  {}
+c {}  {}  {} ", self.rows[0][0], self.rows[0][1], self.rows[0][2], 
+                self.rows[1][0], self.rows[1][1], self.rows[1][2], 
+                self.rows[2][0], self.rows[2][1], self.rows[2][2])
     }
 }
 
