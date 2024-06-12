@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::{
     game_state::State::{self, *},
     player::{Move, Player},
@@ -106,9 +108,10 @@ impl Board {
     }
 }
 
-impl ToString for Board {
-    fn to_string(&self) -> String {
-        format!(
+impl Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
             "  1  2  3
 a {}  {}  {}
 b {}  {}  {}

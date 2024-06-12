@@ -1,6 +1,6 @@
 mod tictactoe;
 
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 
 use tictactoe::{Board, Move, Player, State};
 
@@ -43,7 +43,7 @@ fn main() {
     };
 
     clear();
-    println!("{}", &playing_board.to_string());
+    println!("{}", &playing_board);
     println!("Enter move for {}", playing_board.current_player);
 
     loop {
@@ -69,7 +69,7 @@ fn main() {
         };
 
         clear();
-        println!("{}", &playing_board.to_string());
+        println!("{}", &playing_board);
         println!("Enter move for {}", playing_board.current_player);
     }
 }
