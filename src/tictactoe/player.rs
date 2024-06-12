@@ -4,11 +4,18 @@ pub enum Player {
     O,
 }
 
+#[derive(PartialEq)]
+pub enum Move {
+    Exit,
+    Valid(usize, usize),
+    Invalid,
+}
+
 impl std::fmt::Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            Self::X => return write!(f, "X"),
-            Self::O => return write!(f, "O"),
-        };
+            Self::X => write!(f, "X"),
+            Self::O => write!(f, "O"),
+        }
     }
 }

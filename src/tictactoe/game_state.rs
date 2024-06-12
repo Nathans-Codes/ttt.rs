@@ -1,12 +1,12 @@
-use super::player::Player;
 use super::board::{Board, Slot};
+use super::player::Player;
 
 #[repr(u8)]
 #[derive(PartialEq, Eq)]
 pub enum State {
-    Playing = 0,
-    Draw = 2,
-    Won(Player) = 1,
+    Playing,
+    Draw,
+    Won(Player),
 }
 
 impl State {
@@ -18,16 +18,15 @@ impl State {
                     Slot::Empty => Self::Playing,
                 };
             };
-        };
+        }
 
         Self::Playing
     }
 
     pub(super) fn check_diagonal(board: &Board) -> Self {
         let rows = &board.rows[..];
-        let pattern_found = 
-            (rows[0][0] == rows[1][1] && rows[1][1] == rows[2][2])
-         || (rows[0][2] == rows[1][1] && rows[1][1] == rows[2][0]);
+        let pattern_found = (rows[0][0] == rows[1][1] && rows[1][1] == rows[2][2])
+            || (rows[0][2] == rows[1][1] && rows[1][1] == rows[2][0]);
 
         if pattern_found {
             return match rows[1][1] {
@@ -49,7 +48,7 @@ impl State {
                     Slot::Empty => Self::Playing,
                 };
             };
-        };
+        }
 
         Self::Playing
     }
@@ -60,8 +59,8 @@ impl State {
                 if *slot == Slot::Empty {
                     return false;
                 };
-            };
-        };
+            }
+        }
 
         true
     }

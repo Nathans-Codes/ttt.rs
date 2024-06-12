@@ -1,9 +1,9 @@
-mod player;
-mod game_state;
 mod board;
+mod game_state;
+mod player;
 
 pub use {
-    player::Player,
-    game_state::State,
     board::Board,
+    game_state::State,
+    player::{Move, Player},
 };
