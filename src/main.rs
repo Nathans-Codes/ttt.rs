@@ -20,14 +20,8 @@ fn get_move_from_user(b: &Board) -> Move {
     }
 }
 
-fn clear() {
-    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-}
-
-fn main() {
+fn get_player() -> Player {
     clear();
-    let mut playing_board = Board::new();
-
     println!("Who begins, X or O?");
 
     let mut answer: [u8; 1] = [b' '];
@@ -36,11 +30,22 @@ fn main() {
         .read_exact(&mut answer)
         .expect("Failed to read line");
 
-    match answer {
-        [b'X'] => playing_board.current_player = Player::X,
-        [b'O'] => playing_board.current_player = Player::O,
-        _ => (),
-    };
+    match answer.to_ascii_uppercase()[0] {
+        b'X' => Player::X,
+        b'O' => Player::O,
+        _ => get_player(),
+    }
+}
+
+fn clear() {
+    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+}
+
+fn main() {
+    clear();
+    let mut playing_board = Board::new();
+
+    playing_board.current_player = get_player();
 
     clear();
     println!("{}", &playing_board);
@@ -57,10 +62,14 @@ fn main() {
             Err(_) => (),
             Ok(state) => match state {
                 State::Draw => {
+                    clear();
+                    println!("{}", &playing_board);
                     println!("It's a draw!");
                     break;
                 }
                 State::Won(player) => {
+                    clear();
+                    println!("{}", &playing_board);
                     println!("{} won this game!", player);
                     break;
                 }
