@@ -4,7 +4,11 @@ use std::io::{self, Read};
 
 use tictactoe::{Board, Move, Player, State};
 
-fn get_move_from_user(b: &Board) -> Move {
+fn get_move(b: &Board) -> Move {
+    clear();
+    println!("{}", &b);
+    println!("Enter move for {}", b.current_player);
+
     let mut next_move = String::new();
     io::stdin()
         .read_line(&mut next_move)
@@ -15,7 +19,7 @@ fn get_move_from_user(b: &Board) -> Move {
     let m = b.parse_move(next_move);
 
     match m {
-        Move::Invalid => get_move_from_user(b),
+        Move::Invalid => get_move(b),
         _ => m,
     }
 }
@@ -47,12 +51,8 @@ fn main() {
 
     playing_board.current_player = get_player();
 
-    clear();
-    println!("{}", &playing_board);
-    println!("Enter move for {}", playing_board.current_player);
-
     loop {
-        let next_move = get_move_from_user(&playing_board);
+        let next_move = get_move(&playing_board);
 
         if next_move == Move::Exit {
             break;
@@ -77,8 +77,5 @@ fn main() {
             },
         };
 
-        clear();
-        println!("{}", &playing_board);
-        println!("Enter move for {}", playing_board.current_player);
     }
 }
